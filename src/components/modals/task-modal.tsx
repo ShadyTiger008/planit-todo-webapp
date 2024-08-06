@@ -1,11 +1,11 @@
 import React, { useState, MouseEvent } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import ElipsisMenu from "../components/ElipsisMenu";
-import elipsis from "../assets/icon-vertical-ellipsis.svg";
-import boardsSlice from "../redux/boardsSlice";
-import Subtask from "../components/Subtask";
+import elipsis from "~/app/assets/icon-vertical-ellipsis.svg";
+import boardsSlice from "~/app/redux/boardsSlice";
 import DeleteModal from "./delete-modal";
 import AddEditTaskModal from "./add-edit-task-modal";
+import ElipsisMenu from "../elipsis-menu";
+import Subtask from "../subtasks";
 
 interface TaskModalProps {
   taskIndex: number;
@@ -43,7 +43,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const dispatch = useDispatch();
   const [isElipsisMenuOpen, setIsElipsisMenuOpen] = useState<boolean>(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
-  const boards = useSelector((state: { boards: BoardType[] }) => state.boards);
+  const boards = useSelector((state: { boards: BoardType[] }) => state.boards.boards);
   const board = boards.find((board) => board.isActive);
   const columns = board?.columns || [];
   const col = columns.find((_, i) => i === colIndex);

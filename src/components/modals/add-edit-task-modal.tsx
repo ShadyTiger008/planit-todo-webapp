@@ -1,7 +1,8 @@
+"use client"
 import React, { useState, ChangeEvent, MouseEvent } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
-import crossIcon from "../assets/icon-cross.svg";
+import crossIcon from "~/app/assets/icon-cross.svg";
 import boardsSlice from "~/app/redux/boardsSlice";
 
 interface Subtask {
@@ -51,7 +52,7 @@ const AddEditTaskModal: React.FC<Props> = ({
   ]);
 
   const board = useSelector((state: RootState) =>
-    state.boards.find((board) => board.isActive),
+    state.boards.boards.find((board) => board.isActive),
   );
 
   if (!board) return null; // Handle case where board is not found

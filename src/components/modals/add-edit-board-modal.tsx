@@ -1,9 +1,9 @@
+"use client"
 import React, { useState, ChangeEvent, MouseEvent } from "react";
-import crossIcon from "../assets/icon-cross.svg";
-import boardsSlice from "../redux/boardsSlice";
+import crossIcon from "~/app/assets/icon-cross.svg";
+import boardsSlice from "~/app/redux/boardsSlice";
 import { v4 as uuidv4 } from "uuid";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../redux/store"; // Adjust the import path as needed
 
 interface Column {
   name: string;
@@ -33,8 +33,8 @@ const AddEditBoardModal: React.FC<Props> = ({ setIsBoardModalOpen, type }) => {
   const [isValid, setIsValid] = useState(true);
 
   // Ensure the state has a type defined
-  const board = useSelector((state: RootState) =>
-    state.boards.find((board) => board.isActive),
+  const board = useSelector((state: any) =>
+    state.boards.boards.find((board) => board.isActive),
   );
 
   // Use a type guard to handle `undefined` values

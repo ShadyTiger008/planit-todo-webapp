@@ -31,7 +31,7 @@ interface BoardsState {
 
 // Define initial state type
 const initialState: BoardsState = {
-  boards: data.boards,
+  boards: data.boards as Board[], // Ensure data.boards is of type Board[]
 };
 
 const boardsSlice = createSlice({
@@ -56,7 +56,7 @@ const boardsSlice = createSlice({
       action: PayloadAction<{ name: string; newColumns: Column[] }>,
     ) => {
       const payload = action.payload;
-      const board = state.boards.find((board) => board.isActive);
+      const board = state.boards.boards.find((board) => board.isActive);
       if (board) {
         board.name = payload.name;
         board.columns = payload.newColumns;
@@ -86,7 +86,7 @@ const boardsSlice = createSlice({
       const { title, status, description, subtasks, newColIndex } =
         action.payload;
       const task: Task = { title, description, subtasks, status };
-      const board = state.boards.find((board) => board.isActive);
+      const board = state.boards.boards.find((board) => board.isActive);
       if (board) {
         const column = board.columns[newColIndex];
         if (column) {
@@ -115,7 +115,7 @@ const boardsSlice = createSlice({
         newColIndex,
         taskIndex,
       } = action.payload;
-      const board = state.boards.find((board) => board.isActive);
+      const board = state.boards.boards.find((board) => board.isActive);
       if (board) {
         const prevColumn = board.columns[prevColIndex];
         const task = prevColumn?.tasks[taskIndex];
@@ -144,7 +144,7 @@ const boardsSlice = createSlice({
       }>,
     ) => {
       const { colIndex, prevColIndex, taskIndex } = action.payload;
-      const board = state.boards.find((board) => board.isActive);
+      const board = state.boards.boards.find((board) => board.isActive);
       if (board) {
         const prevColumn = board.columns[prevColIndex];
         const task = prevColumn?.tasks.splice(taskIndex, 1)[0];
@@ -165,7 +165,7 @@ const boardsSlice = createSlice({
       }>,
     ) => {
       const { colIndex, taskIndex, index } = action.payload;
-      const board = state.boards.find((board) => board.isActive);
+      const board = state.boards.boards.find((board) => board.isActive);
       if (board) {
         const column = board.columns[colIndex];
         const task = column?.tasks[taskIndex];
@@ -209,7 +209,7 @@ const boardsSlice = createSlice({
       action: PayloadAction<{ colIndex: number; taskIndex: number }>,
     ) => {
       const { colIndex, taskIndex } = action.payload;
-      const board = state.boards.find((board) => board.isActive);
+      const board = state.boards.boards.find((board) => board.isActive);
       if (board) {
         const column = board.columns[colIndex];
         if (column) {
