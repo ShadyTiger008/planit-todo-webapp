@@ -3,6 +3,10 @@ import "~/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 import { Ubuntu } from "next/font/google";
 import { type Metadata } from "next";
+import CustomQueryClientProvider from "./QueryClient";
+import { ThemeProvider } from "./providers/theme-provider";
+import ToasterProvider from "./providers/toaster-provider";
+import { Toaster } from "~/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -20,7 +24,20 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
-      <body>{children}</body>
+      <body>
+        <CustomQueryClientProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <ToasterProvider />
+            {children}
+            <Toaster />
+          </ThemeProvider>
+        </CustomQueryClientProvider>
+      </body>
     </html>
   );
 }
