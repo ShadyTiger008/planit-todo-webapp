@@ -2,6 +2,7 @@
 import React from "react";
 import useAuthStore from "../providers/store/authStore";
 import { useGetQuery } from "../providers/query/getQuery";
+import Link from "next/link";
 
 type Props = {};
 
@@ -26,11 +27,11 @@ const BoardsTask = (props: Props) => {
         ) : (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {data?.data.length > 0 ? (
-              data.data.map((board) => {
+              data.data.map((board: any) => {
                 console.log("Board: ", board);
 
                 return (
-                  <div
+                  <Link href={`/tasks/${board._id}`}
                     key={board._id}
                     className="rounded-lg bg-blue-50 p-4 shadow transition-shadow duration-300 hover:shadow-lg"
                   >
@@ -38,7 +39,7 @@ const BoardsTask = (props: Props) => {
                       {board.name}
                     </h3>
                     <p className="mt-2 text-gray-600">{board.description}</p>
-                  </div>
+                  </Link>
                 );
               })
             ) : (

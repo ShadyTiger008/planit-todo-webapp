@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = 12;
     const skip = (page - 1) * limit;
-    const boardId = parseInt(searchParams.get("boardId") || "");
+    const boardId = searchParams.get("boardId") || "";
     const status = parseInt(searchParams.get("status") || "");
     const search = parseInt(searchParams.get("search") || "");
 
