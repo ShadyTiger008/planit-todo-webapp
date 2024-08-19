@@ -38,7 +38,12 @@ export async function GET(request: NextRequest) {
       {
         success: true,
         message: "Status retrieved successfully",
-        data: status,
+        data: {
+          document: status,
+          totalCount: await Status.countDocuments(filters),
+          currentPage: page,
+          limit,
+        },
       },
       { status: 200 },
     );

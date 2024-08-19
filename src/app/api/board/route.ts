@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
         success: true,
         message: "Boards retrieved successfully",
         data: {
-          boards,
+          document: boards,
           totalCount: await KanbanBoard.countDocuments(filters),
           currentPage: page,
           limit,
