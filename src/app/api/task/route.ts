@@ -5,19 +5,28 @@ import Task from "~/app/server/models/task.model";
 
 connectDB();
 
-// POST - Create a new task
 export async function POST(request: NextRequest) {
   try {
-    const { title, description, dueDate, status, boardId } =
-      await request.json();
+    const {
+      title,
+      description,
+      dueDate,
+      status,
+      boardId,
+      image,
+      tags,
+      priority,
+    } = await request.json();
 
-    // Create a new task
     const newTask = await Task.create({
       title,
       description,
       dueDate,
       status,
       boardId: new mongoose.Types.ObjectId(boardId),
+      image,
+      tags,
+      priority,
     });
 
     return NextResponse.json(
@@ -37,7 +46,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET - Retrieve tasks with search and filter
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = new URLSearchParams(request.nextUrl.searchParams);
@@ -45,22 +54,28 @@ export async function GET(request: NextRequest) {
     const limit = 12;
     const skip = (page - 1) * limit;
     const boardId = searchParams.get("boardId") || "";
-    const status = parseInt(searchParams.get("status") || "");
-    const search = parseInt(searchParams.get("search") || "");
+    const status = searchParams.get("status");
+    const search = searchParams.get("search") || "";
 
-    // Build query filters
     const filters: any = { boardId: new mongoose.Types.ObjectId(boardId) };
     if (status) filters.status = status;
     if (search) filters.title = { $regex: search, $options: "i" };
 
-    // Find tasks based on filters
-    const tasks = await Task.find(filters).sort({ createdAt: -1 });
+    const tasks = await Task.find(filters)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
     return NextResponse.json(
       {
         success: true,
         message: "Tasks retrieved successfully",
-        data: tasks,
+        data: {
+          document: tasks,
+          totalCount: await Task.countDocuments(filters),
+          currentPage: page,
+          limit,
+        },
       },
       { status: 200 },
     );
@@ -73,13 +88,21 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// PUT - Update a task
+
 export async function PUT(request: NextRequest) {
   try {
-    const { taskId, title, description, dueDate, status, completed } =
-      await request.json();
+    const {
+      taskId,
+      title,
+      description,
+      dueDate,
+      status,
+      completed,
+      image,
+      tags,
+      priority,
+    } = await request.json();
 
-    // Check if the task exists
     const task = await Task.findById(taskId);
     if (!task) {
       return NextResponse.json(
@@ -88,12 +111,14 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Update task details
     task.title = title ?? task.title;
     task.description = description ?? task.description;
     task.dueDate = dueDate ?? task.dueDate;
     task.status = status ?? task.status;
     task.completed = completed ?? task.completed;
+    task.image = image ?? task.image;
+    task.tags = tags ?? task.tags;
+    task.priority = priority ?? task.priority;
 
     const updatedTask = await task.save();
 
@@ -114,12 +139,12 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-// DELETE - Remove a task
+
 export async function DELETE(request: NextRequest) {
   try {
-    const { taskId } = await request.json();
+   const searchParams = new URLSearchParams(request.nextUrl.searchParams);
+   const taskId = (searchParams.get("taskId") || "");
 
-    // Check if the task exists
     const task = await Task.findById(taskId);
     if (!task) {
       return NextResponse.json(
@@ -128,7 +153,6 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Remove the task
     await task.deleteOne();
 
     return NextResponse.json(

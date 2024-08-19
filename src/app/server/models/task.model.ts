@@ -1,13 +1,17 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 
-// Define the Status enum
 enum Status {
   TODO = "TODO",
   IN_PROGRESS = "IN_PROGRESS",
   DONE = "DONE",
 }
 
-// Extend the ITask interface to include the status enum
+enum Priority {
+  HIGH = "HIGH",
+  MEDIUM = "MEDIUM",
+  LOW = "LOW",
+}
+
 export interface ITask extends Document {
   title: string;
   description?: string;
@@ -15,9 +19,11 @@ export interface ITask extends Document {
   completed?: boolean;
   boardId: mongoose.Types.ObjectId;
   status: Status;
+  image: string;
+  tags: string[];
+  priority: Priority;
 }
 
-// Define the taskSchema using the Mongoose schema
 const taskSchema = new Schema<ITask>(
   {
     title: {
@@ -32,13 +38,27 @@ const taskSchema = new Schema<ITask>(
     },
     status: {
       type: String,
-      enum: Object.values(Status), // Use the enum values as allowed options
-      default: Status.TODO, // Set a default value if needed
+      enum: Object.values(Status),
+      default: Status.TODO,
       required: true,
     },
     completed: {
       type: Boolean,
       default: false,
+    },
+    image: {
+      type: String,
+      default: null,
+    },
+    tags: {
+      type: [String],
+      default: [],
+    },
+    priority: {
+      type: String,
+      enum: Object.values(Priority),
+      default: Priority.LOW,
+      required: true,
     },
     boardId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -49,7 +69,6 @@ const taskSchema = new Schema<ITask>(
   { timestamps: true },
 );
 
-// Create and export the Task model
 const Task: Model<ITask> =
   mongoose.models.Task || mongoose.model<ITask>("Task", taskSchema);
 
