@@ -22,6 +22,10 @@ const kanbanBoardSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    backgroundImage: {
+      type: String,
+      required: false,
+    },
     tasks: [
       {
         type: mongoose.Schema.Types.ObjectId,

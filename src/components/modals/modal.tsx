@@ -35,7 +35,7 @@ const Modal: React.FC<ModalProps> = ({
         toast.success("Task updated successfully");
       } else {
         // Create new task
-        await axios.post(`/api/createTask`, {
+        await axios.post(`/api/task`, {
           boardId,
           name,
           description,
