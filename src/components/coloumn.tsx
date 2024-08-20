@@ -3,6 +3,7 @@ import { Droppable, Draggable } from "@hello-pangea/dnd";
 import { Task } from "~/app/types/types";
 import Image from "next/image";
 import { IoMdCreate, IoMdTrash } from "react-icons/io";
+import { client_api } from "~/app/config";
 
 interface ColumnProps {
   title: string;
@@ -31,30 +32,36 @@ const Column: React.FC<ColumnProps> = ({ title, tasks, droppableId }) => {
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
-                      className="cursor-pointer rounded-lg bg-white p-4 shadow-md transition-transform duration-300 ease-in-out"
+                      className="cursor-pointer rounded-lg bg-white p-4 shadow-md transition-transform duration-300 ease-in-out hover:scale-105"
                     >
-                      <div className="relative transform cursor-pointer space-y-2 rounded-lg bg-white p-4 shadow-lg transition-transform hover:scale-105">
+                      <div className="relative flex flex-col space-y-2 rounded-lg bg-white p-4 shadow-lg">
                         {task.image && (
-                          <Image
-                            src="https://unsplash.com/photos/green-trees-near-body-of-water-during-daytime-aCnkRlBD0i4"
-                            alt={task.title}
-                            fill
-                            className="h-40 w-full rounded-t-lg object-cover"
-                          />
+                          <div className="relative mb-4 h-40 w-full">
+                            <Image
+                              src={`${client_api}/${task.image}`}
+                              alt={task.title}
+                              layout="fill"
+                              objectFit="cover"
+                              className="rounded-t-lg"
+                            />
+                          </div>
                         )}
-                        <h3 className="text-lg font-bold">{task.title}</h3>
-                        <p className="truncate text-sm text-gray-600">
+                        <h3 className="mb-2 text-lg font-bold">{task.title}</h3>
+                        <p className="mb-2 truncate text-sm text-gray-600">
                           {task.description}
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className="mb-2 text-sm text-gray-500">
                           Due: {new Date(task.dueDate).toLocaleDateString()}
                         </p>
-                        <p className="text-sm font-bold text-red-500">
+                        <p className="mb-2 text-sm font-bold text-red-500">
                           Priority: {task.priority}
                         </p>
-                        <div className="flex flex-row items-center justify-start gap-2">
-                          {task.tags?.map((tag: string) => (
-                            <span className="rounded-md border p-1 text-center text-xs font-semibold text-gray-500">
+                        <div className="flex flex-wrap gap-2">
+                          {task.tags?.map((tag: string, index: number) => (
+                            <span
+                              key={index}
+                              className="rounded-md border border-gray-300 p-1 text-xs font-semibold text-gray-500"
+                            >
                               {tag}
                             </span>
                           ))}
