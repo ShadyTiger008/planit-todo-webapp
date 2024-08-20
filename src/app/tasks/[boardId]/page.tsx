@@ -14,6 +14,7 @@ import Column from "~/components/coloumn";
 import Modal from "~/components/modals/modal";
 import { useGetQuery } from "~/app/providers/query/getQuery";
 import { convert_to_value } from "~/app/server/utils/helpers";
+import { Plus } from "lucide-react";
 
 const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -154,12 +155,10 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
     <div className="container mx-auto p-4">
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Kanban Board</h1>
-        <button
-          className="btn btn-primary flex items-center"
-          onClick={() => openModal()}
-        >
-          <IoIosAdd className="mr-2" /> Add Task
-        </button>
+        <div className="flex cursor-pointer flex-row items-center gap-2 rounded-full bg-white px-3 py-2 shadow-sm transition-colors duration-300 hover:bg-gray-200">
+          <Plus className="h-5 w-5 text-blue-500" />
+          <span className="text-sm font-medium text-gray-700">Add Column</span>
+        </div>
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
@@ -181,7 +180,7 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
-                      className="min-h-screen w-[25rem] flex-shrink-0 rounded border border-gray-300 bg-gray-100 p-4"
+                      className="p- min-h-screen w-[25rem] flex-shrink-0 rounded border border-gray-300 bg-gray-100"
                     >
                       <Droppable droppableId={convert_to_value(item.title)}>
                         {(provided) => (

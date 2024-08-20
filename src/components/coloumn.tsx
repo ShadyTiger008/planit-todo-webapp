@@ -6,8 +6,24 @@ import { IoMdCreate, IoMdTrash } from "react-icons/io";
 import { client_api } from "~/app/config";
 import DetailsModal from "./modals/details-modal";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
-import { Clock, Info } from "lucide-react";
+import {
+  Clock,
+  EllipsisVertical,
+  Info,
+  Pencil,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import { Button } from "./ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 interface ColumnProps {
   title: string;
@@ -51,13 +67,48 @@ const Column: React.FC<ColumnProps> = ({ title, tasks, droppableId }) => {
 
   return (
     <div className="shadow- p- flex flex-col rounded-lg bg-gray-100">
-      <h2 className="mb-4 text-lg font-semibold">{title}</h2>
+      <div className="flex flex-row items-center justify-between rounded-lg bg-gray-100 p-4 shadow-lg">
+        <h2 className="text-xl font-bold text-gray-800">{title}</h2>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <EllipsisVertical />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuLabel>More Options</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuRadioGroup className="space-y-1"
+            // value={position}
+            // onValueChange={setPosition}
+            >
+              <DropdownMenuRadioItem value="top" className="p-2 flex flex-row items-center gap-2 cursor-pointer">
+                <Plus className="h-5 w-5 text-blue-500" />
+                <span className="text-sm font-medium text-gray-700">
+                  Add Task
+                </span>
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="top" className="p-2 flex flex-row items-center gap-2 cursor-pointer">
+                <Pencil className="h-5 w-5 text-blue-500" />
+                <span className="text-sm font-medium text-gray-700">
+                  Edit Column
+                </span>
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="top" className="p-2 flex flex-row items-center gap-2 cursor-pointer">
+                <Trash2 className="h-5 w-5 text-blue-500" />
+                <span className="text-sm font-medium text-gray-700">
+                  Delete Column
+                </span>
+              </DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
       <Droppable droppableId={droppableId}>
         {(provided) => (
           <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            className="flex min-h-[150px] flex-col space-y-4 overflow-hidden"
+            className="flex min-h-[150px] flex-col space-y-4 overflow-hidden p-4"
           >
             {tasks.map((task: any, index: number) => {
               return (
@@ -89,7 +140,7 @@ const Column: React.FC<ColumnProps> = ({ title, tasks, droppableId }) => {
                             />
                           </div>
                         )}
-                        <div className="flex flex-row justify-between items-center w-full">
+                        <div className="flex w-full flex-row items-center justify-between">
                           <h3 className="text-left text-lg font-bold">
                             {task.title}
                           </h3>
@@ -98,7 +149,7 @@ const Column: React.FC<ColumnProps> = ({ title, tasks, droppableId }) => {
                               <Info />
                             </DialogTrigger>
                             <DialogContent className="">
-                              <DetailsModal task={task}/>
+                              <DetailsModal task={task} />
                             </DialogContent>
                           </Dialog>
                         </div>

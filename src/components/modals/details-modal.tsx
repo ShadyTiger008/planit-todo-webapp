@@ -9,13 +9,26 @@ import {
 } from "../ui/dialog";
 import Image from "next/image";
 import { client_api } from "~/app/config";
-import { Clock, Info } from "lucide-react";
+import { Clock, Info, Edit, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 type Props = {
   task: any;
 };
 
 const DetailsModal = ({ task }: Props) => {
+  const handleEdit = () => {
+    // onEdit();
+    toast.info("Edit action triggered"); // Provide feedback to the user
+  };
+
+  const handleDelete = () => {
+    if (confirm("Are you sure you want to delete this task?")) {
+      // onDelete();
+      toast.success("Task deleted successfully");
+    }
+  };
+
   return (
     <div className="flex flex-col space-y-4 rounded-lg border bg-white p-6 shadow-md">
       {/* Task Image */}
@@ -53,7 +66,13 @@ const DetailsModal = ({ task }: Props) => {
       <div className="flex items-center space-x-2">
         <span className="text-sm font-semibold text-gray-700">Priority:</span>
         <span
-          className={`text-sm font-medium text-gray-600 ${task.priority.toLowerCase() === "high" ? "text-red-500" : task.priority.toLowerCase() === "medium" ? "text-yellow-500" : "text-green-500"}`}
+          className={`text-sm font-medium text-gray-600 ${
+            task.priority.toLowerCase() === "high"
+              ? "text-red-500"
+              : task.priority.toLowerCase() === "medium"
+                ? "text-yellow-500"
+                : "text-green-500"
+          }`}
         >
           {task.priority}
         </span>
@@ -73,6 +92,24 @@ const DetailsModal = ({ task }: Props) => {
           <Clock className="h-4 w-4" />
           <span>{new Date(task.dueDate).toLocaleString()}</span>
         </div>
+      </div>
+
+      {/* Edit and Delete Buttons */}
+      <div className="flex justify-end gap-4 pt-4">
+        <button
+          onClick={handleEdit}
+          className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white transition-all hover:bg-blue-600"
+        >
+          <Edit className="h-4 w-4" />
+          Edit
+        </button>
+        <button
+          onClick={handleDelete}
+          className="flex items-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-white transition-all hover:bg-red-600"
+        >
+          <Trash2 className="h-4 w-4" />
+          Delete
+        </button>
       </div>
     </div>
   );
