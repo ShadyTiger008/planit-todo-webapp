@@ -18,6 +18,6 @@ export function isValidEmail(email: string) {
 }
 
 export const convert_to_value = (word: string) => {
-  let value = word.split(" ").join("_").toUpperCase();
+  let value = word?.split(" ").join("_").toUpperCase();
   return value;
 };

@@ -9,12 +9,14 @@ import Column from "~/components/coloumn";
 import Modal from "~/components/modals/modal";
 import { useGetQuery } from "~/app/providers/query/getQuery";
 import { convert_to_value } from "~/app/server/utils/helpers";
+import DetailsModal from "~/components/modals/details-modal";
 
 const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreate, setIsCreate] = useState(false);
   const [modalTask, setModalTask] = useState<Task | null>(null);
+  const [toggleDetails, setToggleDetails] = useState<boolean>(false)
 
   useEffect(() => {
     fetchTasks();
@@ -137,16 +139,19 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
-                    className="w-[25rem] min-h-screen flex-shrink-0 rounded border border-gray-300 bg-gray-100 p-4"
+                    className="min-h-screen w-[25rem] flex-shrink-0 rounded border border-gray-300 bg-gray-100 p-4"
                   >
-                    <Column
-                      title={item.title}
-                      tasks={tasks.filter(
-                        (task) => task.status === convert_to_value(item.title),
-                      )}
-                      onEdit={openModal}
-                      onDelete={handleDelete}
-                    />
+                    <div onClick={() => setToggleDetails(true)}>
+                      <Column
+                        title={item.title}
+                        tasks={tasks.filter(
+                          (task) =>
+                            task.status === convert_to_value(item.title),
+                        )}
+                        onEdit={openModal}
+                        onDelete={handleDelete}
+                      />
+                    </div>
                     {provided.placeholder}
                   </div>
                 )}
@@ -155,6 +160,10 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
           </div>
         </div>
       </DragDropContext>
+
+      {
+        toggleDetails && <DetailsModal/>
+      }
 
       {isCreate && (
         <Modal
