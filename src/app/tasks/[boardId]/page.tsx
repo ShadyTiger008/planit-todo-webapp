@@ -7,21 +7,17 @@ import {
   Draggable,
   DropResult,
 } from "@hello-pangea/dnd";
-import { IoIosAdd } from "react-icons/io";
 import { toast } from "sonner";
 import { Task } from "~/app/types/types";
 import Column from "~/components/coloumn";
-import Modal from "~/components/modals/modal";
 import { useGetQuery } from "~/app/providers/query/getQuery";
 import { convert_to_value } from "~/app/server/utils/helpers";
-import { Plus } from "lucide-react";
+import AddColumnButton from "~/components/add-column-button";
 
 const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [columns, setColumns] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isCreate, setIsCreate] = useState(false);
-  const [modalTask, setModalTask] = useState<Task | null>(null);
 
   // Fetch columns using the useGetQuery hook
   const { data: columnsData, isLoading: columnsLoading } = useGetQuery({
@@ -120,16 +116,6 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
     }
   };
 
-  const openModal = (task: Task | null = null) => {
-    setModalTask(task);
-    setIsCreate(true);
-  };
-
-  const closeModal = () => {
-    setModalTask(null);
-    setIsCreate(false);
-  };
-
   const handleDelete = async (taskId: string) => {
     try {
       await axios.delete(`/api/task`, {
@@ -155,10 +141,7 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
     <div className="container mx-auto p-4">
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Kanban Board</h1>
-        <div className="flex cursor-pointer flex-row items-center gap-2 rounded-full bg-white px-3 py-2 shadow-sm transition-colors duration-300 hover:bg-gray-200">
-          <Plus className="h-5 w-5 text-blue-500" />
-          <span className="text-sm font-medium text-gray-700">Add Column</span>
-        </div>
+        <AddColumnButton />
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
@@ -195,8 +178,7 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
                                 (task) =>
                                   task.status === convert_to_value(item.title),
                               )}
-                              onEdit={openModal}
-                              onDelete={handleDelete}
+                              droppableId={convert_to_value(item.droppableId)}
                             />
                             {provided.placeholder}
                           </div>
@@ -211,16 +193,6 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
           )}
         </Droppable>
       </DragDropContext>
-
-      {isCreate && (
-        <Modal
-          closeModal={closeModal}
-          title={modalTask ? "Edit Task" : "Create Task"}
-          task={modalTask}
-          boardId={params.boardId}
-          refreshTasks={fetchTasks}
-        />
-      )}
     </div>
   );
 };
