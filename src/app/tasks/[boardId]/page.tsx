@@ -160,11 +160,7 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
           </div>
         </div>
       </DragDropContext>
-
-      {
-        toggleDetails && <DetailsModal/>
-      }
-
+      
       {isCreate && (
         <Modal
           closeModal={closeModal}
