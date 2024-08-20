@@ -1,17 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult,
-} from "@hello-pangea/dnd";
+import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd";
 import { IoIosAdd } from "react-icons/io";
 import { toast } from "sonner";
 import { Task } from "~/app/types/types";
 import Column from "~/components/coloumn";
 import Modal from "~/components/modals/modal";
+import { useGetQuery } from "~/app/providers/query/getQuery";
+import { convert_to_value } from "~/app/server/utils/helpers";
 
 const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -28,47 +25,60 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
       const response = await axios.get(`/api/task`, {
         params: { boardId: params.boardId },
       });
-      setTasks(response.data.data);
+      setTasks(response.data?.data?.document || []);
       setLoading(false);
     } catch (error) {
       toast.error("Error fetching tasks");
     }
   };
 
+  const { data, isLoading } = useGetQuery({ url: `/board/${params.boardId}` });
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   const onDragEnd = async (result: DropResult) => {
     const { source, destination, draggableId } = result;
 
-    if (!destination) return;
-
+    // If there's no destination or the item is dropped in the same position, do nothing
     if (
-      source.droppableId === destination.droppableId &&
-      source.index === destination.index
+      !destination ||
+      (source.droppableId === destination.droppableId &&
+        source.index === destination.index)
     ) {
       return;
     }
 
+    // Find the dragged task
     const draggedTask = tasks.find((task) => task._id === draggableId);
     if (!draggedTask) return;
 
-    const updatedStatus = destination.droppableId;
+    // Convert the destination droppableId to the status title
+    const updatedStatus = convert_to_value(destination.droppableId);
 
-    // Optimistic UI update
+    // Optimistically update the UI
     const updatedTasks = tasks.map((task) =>
       task._id === draggableId ? { ...task, status: updatedStatus } : task,
     );
     setTasks(updatedTasks);
 
     try {
+      // Update the task status on the server
       await axios.put(`/api/task`, {
         taskId: draggableId,
         status: updatedStatus,
       });
+      toast.success("Task status updated successfully");
     } catch (error) {
       console.error("Error updating task status:", error);
       toast.error("Error updating task status");
 
       // Revert the UI state if the API call fails
-      setTasks(tasks);
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task._id === draggableId ? { ...task, status: task.status } : task,
+        ),
+      );
     }
   };
 
@@ -116,38 +126,34 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="kanban-board" direction="horizontal">
-          {(provided) => (
-            <div
-              className="grid grid-cols-1 gap-4 md:grid-cols-3"
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-            >
-              <Column
-                title="Todo"
-                tasks={tasks.filter((task) => task.status === "TODO")}
-                droppableId="TODO"
-                onEdit={openModal}
-                onDelete={handleDelete}
-              />
-              <Column
-                title="In Progress"
-                tasks={tasks.filter((task) => task.status === "IN_PROGRESS")}
-                droppableId="IN_PROGRESS"
-                onEdit={openModal}
-                onDelete={handleDelete}
-              />
-              <Column
-                title="Completed"
-                tasks={tasks.filter((task) => task.status === "DONE")}
-                droppableId="DONE"
-                onEdit={openModal}
-                onDelete={handleDelete}
-              />
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
+        <div className="overflow-x-auto">
+          <div className="flex space-x-4">
+            {data?.data?.document?.map((item) => (
+              <Droppable
+                key={item._id}
+                droppableId={convert_to_value(item.title)}
+              >
+                {(provided) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    className="w-[25rem] min-h-screen flex-shrink-0 rounded border border-gray-300 bg-gray-100 p-4"
+                  >
+                    <Column
+                      title={item.title}
+                      tasks={tasks.filter(
+                        (task) => task.status === convert_to_value(item.title),
+                      )}
+                      onEdit={openModal}
+                      onDelete={handleDelete}
+                    />
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            ))}
+          </div>
+        </div>
       </DragDropContext>
 
       {isCreate && (

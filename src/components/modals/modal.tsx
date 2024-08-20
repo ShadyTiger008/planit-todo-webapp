@@ -10,6 +10,7 @@ interface ModalProps {
   task: Task | null;
   boardId: string;
   refreshTasks: () => void;
+  statuses: { [key: string]: string }; // Add a dictionary for statuses
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -18,19 +19,24 @@ const Modal: React.FC<ModalProps> = ({
   task,
   boardId,
   refreshTasks,
+  statuses,
 }) => {
   const [name, setName] = useState(task?.name || "");
   const [description, setDescription] = useState(task?.description || "");
+  const [status, setStatus] = useState(task?.status || "");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const statusTitle = statuses[status] || status; // Convert status to title
+
       if (task) {
         // Edit task
         await axios.put(`/api/updateTask`, {
           taskId: task._id,
           name,
           description,
+          status: statusTitle, // Send status title
         });
         toast.success("Task updated successfully");
       } else {
@@ -39,6 +45,7 @@ const Modal: React.FC<ModalProps> = ({
           boardId,
           name,
           description,
+          status: statusTitle, // Send status title
         });
         toast.success("Task created successfully");
       }
@@ -79,6 +86,20 @@ const Modal: React.FC<ModalProps> = ({
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
             />
+          </div>
+          <div className="mb-4">
+            <label className="mb-1 block text-sm font-medium">Status</label>
+            <select
+              className="w-full rounded border p-2"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+            >
+              {Object.entries(statuses).map(([key, value]) => (
+                <option key={key} value={key}>
+                  {value}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="flex justify-end">
             <button type="submit" className="btn btn-primary">

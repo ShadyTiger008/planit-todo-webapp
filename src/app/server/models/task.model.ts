@@ -1,10 +1,10 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 
-enum Status {
-  TODO = "TODO",
-  IN_PROGRESS = "IN_PROGRESS",
-  DONE = "DONE",
-}
+// enum Status {
+//   TODO = "TODO",
+//   IN_PROGRESS = "IN_PROGRESS",
+//   DONE = "DONE",
+// }
 
 enum Priority {
   HIGH = "HIGH",
@@ -18,7 +18,7 @@ export interface ITask extends Document {
   dueDate?: Date;
   completed?: boolean;
   boardId: mongoose.Types.ObjectId;
-  status: Status;
+  status: string;
   image: string;
   tags: string[];
   priority: Priority;
@@ -38,8 +38,7 @@ const taskSchema = new Schema<ITask>(
     },
     status: {
       type: String,
-      enum: Object.values(Status),
-      default: Status.TODO,
+      default: null,
       required: true,
     },
     completed: {
