@@ -20,7 +20,7 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
   const [loading, setLoading] = useState(true);
 
   // Fetch columns using the useGetQuery hook
-  const { data: columnsData, isLoading: columnsLoading } = useGetQuery({
+  const { data: columnsData, isLoading: columnsLoading, refetch } = useGetQuery({
     url: `/board/${params.boardId}`,
   });
 
@@ -141,7 +141,7 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
     <div className="container mx-auto p-4">
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Kanban Board</h1>
-        <AddColumnButton />
+        <AddColumnButton boardId={params.boardId} refetch={refetch}/>
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
@@ -152,7 +152,7 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
         >
           {(provided) => (
             <div
-              className="flex space-x-4"
+              className="flex space-x-4 overflow-x-scroll"
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
@@ -163,7 +163,7 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
-                      className="p- min-h-screen w-[25rem] flex-shrink-0 rounded border border-gray-300 bg-gray-100"
+                      className="p- min-h-screen w-[20rem] md:w-[25rem] flex-shrink-0 rounded border border-gray-300 bg-gray-100"
                     >
                       <Droppable droppableId={convert_to_value(item.title)}>
                         {(provided) => (

@@ -1,56 +1,145 @@
-import React from 'react'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { Plus } from 'lucide-react';
-import { Label } from './ui/label';
-import { Input } from './ui/input';
-import { Button } from './ui/button';
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { Plus } from "lucide-react";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import { FieldValues, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import axios from "axios";
+import { server_api } from "~/app/config";
 
-type Props = {}
+type Props = {
+  boardId: string;
+  refetch: () => void;
+};
 
-const AddColumnButton = (props: Props) => {
+const AddColumnButton = ({ boardId, refetch }: Props) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
+  const [color, setColor] = useState("#ff0000"); // Initial color state
+
+  const onSubmit = async (info: FieldValues) => {
+    try {
+      // Handle form submission
+      const body = {
+        title: info.title,
+        color,
+      };
+      await axios.post(`${server_api}/board/${boardId}`, body); // API endpoint to add column
+      toast.success("Column added successfully!");
+      refetch();
+      reset(); // Reset the form
+    } catch (error: any) {
+      console.log("Error:", error);
+      toast.error(error.message);
+    }
+  };
+
+  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newColor = e.target.value;
+    setColor(newColor);
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div className="flex cursor-pointer flex-row items-center gap-2 rounded-full bg-white px-3 py-2 shadow-sm transition-colors duration-300 hover:bg-gray-200">
-          <Plus className="h-5 w-5 text-blue-500" />
-          <span className="text-sm font-medium text-gray-700">Add Column</span>
+        <div className="flex transform cursor-pointer flex-row items-center gap-2 rounded-full bg-blue-600 px-4 py-2 shadow-lg transition duration-300 ease-in-out hover:scale-105 hover:bg-blue-700">
+          <Plus className="h-5 w-5 text-white" />
+          <span className="text-sm font-medium text-white">Add Column</span>
         </div>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="rounded-lg shadow-lg sm:max-w-[450px]">
         <DialogHeader>
-          <DialogTitle>Edit profile</DialogTitle>
-          <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
+          <DialogTitle className="text-2xl font-bold text-gray-800">
+            Add New Column
+          </DialogTitle>
+          <DialogDescription className="text-gray-600">
+            Create a new column for your board by providing a title and
+            selecting a color.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-6">
+          {/* Title Input */}
+          <div className="flex flex-col space-y-1">
+            <Label
+              htmlFor="title"
+              className="text-sm font-medium text-gray-700"
+            >
+              Column Title
             </Label>
             <Input
-              id="name"
-              defaultValue="Pedro Duarte"
-              className="col-span-3"
+              id="title"
+              {...register("title", { required: "Title is required" })}
+              placeholder="Enter column title"
+              className="rounded-md border p-3 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
+            {/* {errors.title && (
+              <span className="text-sm text-red-600">
+                {errors.title.message}
+              </span>
+            )} */}
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
-              Username
+
+          {/* Color Picker and Input */}
+          <div className="flex flex-col space-y-1">
+            <Label
+              htmlFor="colorPicker"
+              className="text-sm font-medium text-gray-700"
+            >
+              Select Color
             </Label>
-            <Input
-              id="username"
-              defaultValue="@peduarte"
-              className="col-span-3"
-            />
+            <div className="flex items-center gap-4">
+              {/* Color Picker */}
+              <input
+                id="colorPicker"
+                type="color"
+                value={color}
+                onChange={handleColorChange}
+                className="h-12 w-12 cursor-pointer rounded-full border-none shadow"
+              />
+              {/* Hex Input */}
+              <input
+                id="colorInput"
+                type="text"
+                value={color}
+                {...register("color", { required: "Color is required" })}
+                onChange={(e) => setColor(e.target.value)}
+                className="flex-grow rounded-md border border-gray-300 p-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="#000000"
+              />
+            </div>
+            {/* {errors.color && (
+              <span className="text-sm text-red-600">
+                {errors.color.message}
+              </span>
+            )} */}
           </div>
-        </div>
-        <DialogFooter>
-          <Button type="submit">Save changes</Button>
-        </DialogFooter>
+
+          <DialogFooter>
+            <Button
+              type="submit"
+              className="w-full rounded-md bg-blue-600 py-2 text-white shadow transition duration-300 ease-in-out hover:bg-blue-700"
+            >
+              Save Column
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );
-}
+};
 
-export default AddColumnButton
+export default AddColumnButton;

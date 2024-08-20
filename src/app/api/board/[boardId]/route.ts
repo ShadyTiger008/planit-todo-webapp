@@ -56,9 +56,17 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(
+  request: NextRequest,
+  {
+    params,
+  }: {
+    params: { boardId: string };
+  },
+) {
   try {
-    const { title, boardId, color } = await request.json();
+    const { title, color, order } = await request.json();
+    const boardId = params.boardId;
 
     // Check if the Status with the same title already exists for the board
     const existStatus = await Status.findOne({ title, boardId });
@@ -69,10 +77,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Find the highest order number in the current board
+    const lastStatus = await Status.findOne({ boardId })
+      .sort({ order: -1 }) // Sort by order in descending order to get the last one
+      .select("order");
+
+    const nextOrder = lastStatus ? lastStatus.order + 1 : 1; // Increment order if there's a previous status, otherwise start with 1
+
     const newStatus = await Status.create({
       title,
       boardId: new mongoose.Types.ObjectId(boardId),
       color,
+      order: order !== undefined ? order : nextOrder, // Use the provided order, or default to the next available order
     });
 
     return NextResponse.json(
@@ -91,6 +107,7 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
 
 export async function PUT(request: NextRequest) {
   try {
