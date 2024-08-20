@@ -5,6 +5,7 @@ export interface IStatus extends Document {
   title: string;
   boardId: mongoose.Types.ObjectId;
   color: string;
+  order: number; // Add order field
 }
 
 // Schema definition for Status
@@ -22,6 +23,10 @@ const statusSchema = new Schema<IStatus>(
     color: {
       type: String,
       default: "blue", // Default color for new tasks
+    },
+    order: {
+      type: Number,
+      required: true, // Ensure order is set
     },
   },
   { timestamps: true },

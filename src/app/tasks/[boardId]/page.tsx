@@ -1,7 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "@hello-pangea/dnd";
 import { IoIosAdd } from "react-icons/io";
 import { toast } from "sonner";
 import { Task } from "~/app/types/types";
@@ -9,18 +14,32 @@ import Column from "~/components/coloumn";
 import Modal from "~/components/modals/modal";
 import { useGetQuery } from "~/app/providers/query/getQuery";
 import { convert_to_value } from "~/app/server/utils/helpers";
-import DetailsModal from "~/components/modals/details-modal";
 
 const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [columns, setColumns] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreate, setIsCreate] = useState(false);
   const [modalTask, setModalTask] = useState<Task | null>(null);
-  const [toggleDetails, setToggleDetails] = useState<boolean>(false)
+
+  // Fetch columns using the useGetQuery hook
+  const { data: columnsData, isLoading: columnsLoading } = useGetQuery({
+    url: `/board/${params.boardId}`,
+  });
 
   useEffect(() => {
     fetchTasks();
   }, [params.boardId]);
+
+  useEffect(() => {
+    if (columnsData) {
+      const sortedColumns = (columnsData?.data?.document || []).sort(
+        (a: any, b: any) => a.order - b.order,
+      );
+      setColumns(sortedColumns);
+      setLoading(false);
+    }
+  }, [columnsData]);
 
   const fetchTasks = async () => {
     try {
@@ -34,39 +53,55 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
     }
   };
 
-  const { data, isLoading } = useGetQuery({ url: `/board/${params.boardId}` });
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
   const onDragEnd = async (result: DropResult) => {
-    const { source, destination, draggableId } = result;
+    const { source, destination, draggableId, type } = result;
 
-    // If there's no destination or the item is dropped in the same position, do nothing
+    if (!destination) return;
+
+    // Handling column drag-and-drop
+    if (type === "COLUMN") {
+      const reorderedColumns = Array.from(columns);
+      const [removed] = reorderedColumns.splice(source.index, 1);
+      reorderedColumns.splice(destination.index, 0, removed);
+
+      setColumns(reorderedColumns);
+
+      try {
+        await axios.put("/api/columns", {
+          columns: reorderedColumns.map((column, index) => ({
+            _id: column._id,
+            order: index,
+          })),
+        });
+        toast.success("Column order updated successfully");
+      } catch (error) {
+        console.error("Error updating column order:", error);
+        toast.error("Error updating column order");
+      }
+
+      return;
+    }
+
+    // Handling task drag-and-drop
     if (
-      !destination ||
-      (source.droppableId === destination.droppableId &&
-        source.index === destination.index)
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
     ) {
       return;
     }
 
-    // Find the dragged task
     const draggedTask = tasks.find((task) => task._id === draggableId);
     if (!draggedTask) return;
 
-    // Convert the destination droppableId to the status title
     const updatedStatus = convert_to_value(destination.droppableId);
 
-    // Optimistically update the UI
     const updatedTasks = tasks.map((task) =>
       task._id === draggableId ? { ...task, status: updatedStatus } : task,
     );
     setTasks(updatedTasks);
 
     try {
-      // Update the task status on the server
-      await axios.put(`/api/task`, {
+      await axios.put("/api/task", {
         taskId: draggableId,
         status: updatedStatus,
       });
@@ -75,7 +110,7 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
       console.error("Error updating task status:", error);
       toast.error("Error updating task status");
 
-      // Revert the UI state if the API call fails
+      // Revert task status on failure
       setTasks((prevTasks) =>
         prevTasks.map((task) =>
           task._id === draggableId ? { ...task, status: task.status } : task,
@@ -107,7 +142,7 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
     }
   };
 
-  if (loading) {
+  if (loading || columnsLoading) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         Loading...
@@ -128,39 +163,56 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="overflow-x-auto">
-          <div className="flex space-x-4">
-            {data?.data?.document?.map((item) => (
-              <Droppable
-                key={item._id}
-                droppableId={convert_to_value(item.title)}
-              >
-                {(provided) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    className="min-h-screen w-[25rem] flex-shrink-0 rounded border border-gray-300 bg-gray-100 p-4"
-                  >
-                    <div onClick={() => setToggleDetails(true)}>
-                      <Column
-                        title={item.title}
-                        tasks={tasks.filter(
-                          (task) =>
-                            task.status === convert_to_value(item.title),
+        <Droppable
+          droppableId="all-columns"
+          direction="horizontal"
+          type="COLUMN"
+        >
+          {(provided) => (
+            <div
+              className="flex space-x-4"
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+            >
+              {columns.map((item, index) => (
+                <Draggable key={item._id} draggableId={item._id} index={index}>
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      className="min-h-screen w-[25rem] flex-shrink-0 rounded border border-gray-300 bg-gray-100 p-4"
+                    >
+                      <Droppable droppableId={convert_to_value(item.title)}>
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                            className="min-h-screen w-full"
+                          >
+                            <Column
+                              title={item.title}
+                              tasks={tasks.filter(
+                                (task) =>
+                                  task.status === convert_to_value(item.title),
+                              )}
+                              onEdit={openModal}
+                              onDelete={handleDelete}
+                            />
+                            {provided.placeholder}
+                          </div>
                         )}
-                        onEdit={openModal}
-                        onDelete={handleDelete}
-                      />
+                      </Droppable>
                     </div>
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            ))}
-          </div>
-        </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
       </DragDropContext>
-      
+
       {isCreate && (
         <Modal
           closeModal={closeModal}
