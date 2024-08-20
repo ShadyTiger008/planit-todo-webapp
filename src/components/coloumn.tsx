@@ -3,7 +3,7 @@ import { Droppable, Draggable } from "@hello-pangea/dnd";
 import { Task } from "~/app/types/types";
 import Image from "next/image";
 import { IoMdCreate, IoMdTrash } from "react-icons/io";
-import { client_api } from "~/app/config";
+import { client_api, server_api } from "~/app/config";
 import DetailsModal from "./modals/details-modal";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import {
@@ -24,14 +24,27 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import Swal from "sweetalert2";
+import { toast } from "sonner";
+import axios from "axios";
 
 interface ColumnProps {
   title: string;
   tasks: Task[];
   droppableId: string;
+  boardId: string;
+  statusId: string;
+  refetch: () => void;
 }
 
-const Column: React.FC<ColumnProps> = ({ title, tasks, droppableId }) => {
+const Column: React.FC<ColumnProps> = ({
+  title,
+  tasks,
+  droppableId,
+  boardId,
+  statusId,
+  refetch,
+}) => {
   const [timers, setTimers] = useState<{ [key: string]: string }>({});
 
   // Function to calculate time left for each task
@@ -65,6 +78,33 @@ const Column: React.FC<ColumnProps> = ({ title, tasks, droppableId }) => {
     return () => clearInterval(interval); // Cleanup the interval on component unmount
   }, [tasks]);
 
+  const handleColumnDelete = async () => {
+    try {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: `The column will be deleted permanently`,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      });
+      if (result.isConfirmed) {
+        const response = await axios.delete(
+          `${server_api}/board/${boardId}?statusId=${statusId}`,
+        );
+        if (response.data.success) {
+          toast.error(response.data.message);
+          refetch();
+        } else {
+          toast.error("Something went wrong!");
+        }
+      }
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
   return (
     <div className="shadow- p- flex flex-col rounded-lg bg-gray-100">
       <div className="flex flex-row items-center justify-between rounded-lg bg-gray-100 p-4 shadow-lg">
@@ -76,23 +116,34 @@ const Column: React.FC<ColumnProps> = ({ title, tasks, droppableId }) => {
           <DropdownMenuContent className="w-56">
             <DropdownMenuLabel>More Options</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuRadioGroup className="space-y-1"
-            // value={position}
-            // onValueChange={setPosition}
+            <DropdownMenuRadioGroup
+              className="space-y-1"
+              // value={position}
+              // onValueChange={setPosition}
             >
-              <DropdownMenuRadioItem value="top" className="p-2 flex flex-row items-center gap-2 cursor-pointer">
+              <DropdownMenuRadioItem
+                value="top"
+                className="flex cursor-pointer flex-row items-center gap-2 p-2"
+              >
                 <Plus className="h-5 w-5 text-blue-500" />
                 <span className="text-sm font-medium text-gray-700">
                   Add Task
                 </span>
               </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="top" className="p-2 flex flex-row items-center gap-2 cursor-pointer">
+              <DropdownMenuRadioItem
+                value="top"
+                className="flex cursor-pointer flex-row items-center gap-2 p-2"
+              >
                 <Pencil className="h-5 w-5 text-blue-500" />
                 <span className="text-sm font-medium text-gray-700">
                   Edit Column
                 </span>
               </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="top" className="p-2 flex flex-row items-center gap-2 cursor-pointer">
+              <DropdownMenuRadioItem
+                value="top"
+                onClick={handleColumnDelete}
+                className="flex cursor-pointer flex-row items-center gap-2 p-2"
+              >
                 <Trash2 className="h-5 w-5 text-blue-500" />
                 <span className="text-sm font-medium text-gray-700">
                   Delete Column

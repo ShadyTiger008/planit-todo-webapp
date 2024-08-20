@@ -179,6 +179,9 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
                                   task.status === convert_to_value(item.title),
                               )}
                               droppableId={convert_to_value(item.droppableId)}
+                              refetch={refetch}
+                              boardId={params.boardId}
+                              statusId={item._id}
                             />
                             {provided.placeholder}
                           </div>
