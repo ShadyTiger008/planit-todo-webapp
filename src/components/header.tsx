@@ -22,7 +22,7 @@ const Header = (props: Props) => {
               <Button className="rounded-md bg-gray-100 px-4 py-2 text-gray-800 hover:bg-gray-200">
                 Login
               </Button>
-              <Button className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-500">
+              <Button className="rounded-md bg-[#4f2fee]/80 px-4 py-2 text-white hover:bg-[#382599]">
                 Register
               </Button>
             </div>
