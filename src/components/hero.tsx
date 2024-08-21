@@ -3,7 +3,7 @@ import CommonButton from "./common-button";
 
 const Hero = () => {
   return (
-    <div className="relative mt-[-75px] h-[102vh] w-full overflow-hidden bg-[url('/bg.jpeg')] bg-cover text-white">
+    <div className="relative h-[102vh] w-full overflow-hidden bg-[url('/bg.jpeg')] bg-cover text-white">
       <div className="gap20 mx-auto flex h-full w-[90%] max-w-[1450px] items-center justify-center pt-[82px]">
         <div className="grid items-center gap-6 md:grid-cols-2">
           <img
