@@ -120,6 +120,8 @@ const useAuthStore = create<State>((set) => {
           : `${auth_api}/login`;
 
         const response = await axios.post(url, data);
+        console.log("Response in global login: ", response);
+        
 
         if (typeof window !== "undefined") {
           localStorage.setItem(
@@ -149,7 +151,12 @@ const useAuthStore = create<State>((set) => {
 
     userLogout: async () => {
       try {
-        await axios.get(`${auth_api}/logout`);
+        // let res = await axios.get(`${auth_api}/logout`);
+
+        // console.log(
+        //   "User logout response: ", res
+        // );
+        
 
         if (typeof window !== "undefined") {
           localStorage.removeItem("token");

@@ -31,21 +31,17 @@ const LoginForm = (props: Props) => {
         : { userName: data.userNameOrEmail, password: data.password };
 
       const response: any = await userLogin(loginData);
-      console.log("Login Response: ", response);
 
-      if (response?.success) {
+      if (response && response.success) {
         toast.success("Login successful!");
       } else {
         toast.error("User not found or password is incorrect!");
       }
-
-      toast.success("Login successful!");
     } catch (error: any) {
       toast.error(error.response?.data?.error || "Login failed!");
     }
   };
 
-  // Function to validate email format
   const validateEmail = (email: string) => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailPattern.test(email);
