@@ -7,14 +7,14 @@ connectDB();
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json();
+    const { email, userName, password } = await request.json();
 
     if (!email && !password) {
       throw new Error("Email and password are required");
     }
 
     // Find user by email in MongoDB
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ $or: [{ email }, { userName }] });
 
     if (!user) {
       throw new Error("No user exists with this email");

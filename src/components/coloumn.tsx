@@ -154,87 +154,93 @@ const Column: React.FC<ColumnProps> = ({
         </DropdownMenu>
       </div>
 
-      <Droppable droppableId={droppableId}>
-        {(provided) => (
-          <div
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-            className="flex min-h-[150px] flex-col space-y-4 overflow-hidden p-4"
-          >
-            {tasks.map((task: any, index: number) => {
-              return (
-                <Draggable key={task._id} draggableId={task._id} index={index}>
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      className="bg- cursor-pointer rounded-lg p-2 shadow-md transition-transform duration-300 ease-in-out hover:scale-105"
-                    >
+      <div className="max-h-[80vh] overflow-y-scroll">
+        <Droppable droppableId={droppableId}>
+          {(provided) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              className="flex min-h-[150px] flex-col space-y-4 overflow-hidden p-4"
+            >
+              {tasks.map((task: any, index: number) => {
+                return (
+                  <Draggable
+                    key={task._id}
+                    draggableId={task._id}
+                    index={index}
+                  >
+                    {(provided) => (
                       <div
-                        className={`relative flex flex-col justify-start space-y-2 rounded-lg border-b-4 bg-white p-4 shadow-lg ${
-                          task.priority === "HIGH"
-                            ? "border-red-500"
-                            : task.priority === "MEDIUM"
-                              ? "border-yellow-500"
-                              : "border-blue-500"
-                        }`}
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        className="bg- cursor-pointer rounded-lg p-2 shadow-md transition-transform duration-300 ease-in-out hover:scale-105"
                       >
-                        {task.image && (
-                          <div className="relative mb-4 h-40 w-full">
-                            <Image
-                              src={`${client_api}/${task.image}`}
-                              alt={task.title}
-                              layout="fill"
-                              objectFit="cover"
-                              className="rounded-t-lg"
-                            />
+                        <div
+                          className={`relative flex flex-col justify-start space-y-2 rounded-lg border-b-4 bg-white p-4 shadow-lg ${
+                            task.priority === "HIGH"
+                              ? "border-red-500"
+                              : task.priority === "MEDIUM"
+                                ? "border-yellow-500"
+                                : "border-blue-500"
+                          }`}
+                        >
+                          {task.image && (
+                            <div className="relative mb-4 h-40 w-full">
+                              <Image
+                                src={`${client_api}/${task.image}`}
+                                alt={task.title}
+                                layout="fill"
+                                objectFit="cover"
+                                className="rounded-t-lg"
+                              />
+                            </div>
+                          )}
+                          <div className="flex w-full flex-row items-center justify-between">
+                            <h3 className="text-left text-lg font-bold">
+                              {task.title}
+                            </h3>
+                            <Dialog>
+                              <DialogTrigger className="">
+                                <Info />
+                              </DialogTrigger>
+                              <DialogContent className="">
+                                <DetailsModal task={task} />
+                              </DialogContent>
+                            </Dialog>
                           </div>
-                        )}
-                        <div className="flex w-full flex-row items-center justify-between">
-                          <h3 className="text-left text-lg font-bold">
-                            {task.title}
-                          </h3>
-                          <Dialog>
-                            <DialogTrigger className="">
-                              <Info />
-                            </DialogTrigger>
-                            <DialogContent className="">
-                              <DetailsModal task={task} />
-                            </DialogContent>
-                          </Dialog>
-                        </div>
-                        <p className="truncate text-left text-sm text-gray-600">
-                          {task.description}
-                        </p>
+                          <p className="truncate text-left text-sm text-gray-600">
+                            {task.description}
+                          </p>
 
-                        <div className="flex flex-row items-center gap-2">
-                          <Clock className="h-4 w-4" />
-                          <span className="text-sm text-red-500">
-                            {timers[task._id] || "Loading..."}
-                          </span>
-                        </div>
-
-                        <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-                          {task.tags?.map((tag: string, index: number) => (
-                            <span
-                              key={index}
-                              className="rounded-md border border-gray-300 p-1 text-xs font-semibold text-gray-500"
-                            >
-                              {tag}
+                          <div className="flex flex-row items-center gap-2">
+                            <Clock className="h-4 w-4" />
+                            <span className="text-sm text-red-500">
+                              {timers[task._id] || "Loading..."}
                             </span>
-                          ))}
+                          </div>
+
+                          <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                            {task.tags?.map((tag: string, index: number) => (
+                              <span
+                                key={index}
+                                className="rounded-md border border-gray-300 p-1 text-xs font-semibold text-gray-500"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
-                </Draggable>
-              );
-            })}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
+                    )}
+                  </Draggable>
+                );
+              })}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </div>
     </div>
   );
 };

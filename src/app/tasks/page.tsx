@@ -3,6 +3,8 @@ import React from "react";
 import useAuthStore from "../providers/store/authStore";
 import { useGetQuery } from "../providers/query/getQuery";
 import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import UserAvatar from "~/components/user-avatar";
 
 type Props = {};
 
@@ -17,6 +19,9 @@ const BoardsTask = (props: Props) => {
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-gray-100 py-8">
+      <nav>
+        <UserAvatar/>
+      </nav>
       <h2 className="mb-6 text-3xl font-semibold text-gray-800">All Boards</h2>
       <div className="w-full max-w-4xl rounded-lg bg-white p-6 shadow-md">
         {isLoading || dataLoading ? (

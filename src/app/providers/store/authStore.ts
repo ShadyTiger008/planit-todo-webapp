@@ -9,9 +9,9 @@ type State = {
   isError: boolean;
   error: null | any;
   email: string;
-  username: string;
+  userName: string;
   setEmail: (email: string) => void;
-  setUsername: (username: string) => void;
+  setUsername: (userName: string) => void;
   setUserLoading: (loading: boolean) => void;
   setUserError: (error: boolean) => void;
   userRegistration: (data: UserRegistrationTypes) => Promise<void>;
@@ -20,18 +20,15 @@ type State = {
 };
 
 type UserRegistrationTypes = {
-  name: string;
+  fullName: string;
   email: string;
-  username: string;
+  userName: string;
   password: string;
-  occupation: string;
-  avatar: any;
-  coverImage: any;
 };
 
 type UserLoginTypes = {
   email?: string;
-  username?: string;
+  userName?: string;
   password: string;
 };
 
@@ -83,9 +80,9 @@ const useAuthStore = create<State>((set) => {
     isError: false,
     error: null,
     email: "",
-    username: "",
+    userName: "",
     setEmail: (email) => set((state) => ({ ...state, email })),
-    setUsername: (username) => set((state) => ({ ...state, username })),
+    setUsername: (userName) => set((state) => ({ ...state, userName })),
     setUserLoading: (loading) =>
       set((state) => ({ ...state, isLoading: loading })),
     setUserError: (error) => set((state) => ({ ...state, isError: error })),
@@ -94,7 +91,7 @@ const useAuthStore = create<State>((set) => {
       try {
         set({ isLoading: true });
 
-        const response = await axios.post(`${auth_api}/registration`, data);
+        const response = await axios.post(`${auth_api}/register`, data);
 
         set({
           user: response.data.user,
@@ -103,6 +100,7 @@ const useAuthStore = create<State>((set) => {
           isError: false,
           error: null,
         });
+        return response?.data;
       } catch (error) {
         console.error("Error during user registration:", error);
 
@@ -118,10 +116,12 @@ const useAuthStore = create<State>((set) => {
       try {
         set({ isLoading: true });
         let url = data.hasOwnProperty("otp")
-          ? `${auth_api }/verify-otp`
+          ? `${auth_api}/verify-otp`
           : `${auth_api}/login`;
 
         const response = await axios.post(url, data);
+        console.log("Response in global login: ", response);
+        
 
         if (typeof window !== "undefined") {
           localStorage.setItem(
@@ -137,7 +137,7 @@ const useAuthStore = create<State>((set) => {
           isError: false,
           error: null,
         });
-        return response?.data?.user;
+        return response?.data;
       } catch (error) {
         console.error("Error during user login:", error);
 
@@ -151,7 +151,12 @@ const useAuthStore = create<State>((set) => {
 
     userLogout: async () => {
       try {
-        await axios.get(`${auth_api}/logout`);
+        // let res = await axios.get(`${auth_api}/logout`);
+
+        // console.log(
+        //   "User logout response: ", res
+        // );
+        
 
         if (typeof window !== "undefined") {
           localStorage.removeItem("token");

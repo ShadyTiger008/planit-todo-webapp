@@ -8,8 +8,6 @@ export interface IUser extends Document {
   userName: string;
   gender?: string;
   email: string;
-  phone: string;
-  occupation?: string;
   password: string;
   type: Number;
   status?: Number;
@@ -98,7 +96,7 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-userSchema.index({ username: 1, email: 1 });
+userSchema.index({ userName: 1, email: 1 });
 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
@@ -115,7 +113,7 @@ userSchema.methods.generateAccessToken = function () {
     {
       _id: this._id,
       email: this.email,
-      username: this.username,
+      userName: this.userName,
       fullName: this.fullName,
     },
     process.env.ACCESS_TOKEN_SECRET!,
@@ -137,7 +135,6 @@ userSchema.methods.generateRefreshToken = function () {
   );
 };
 
-const User =
-  mongoose.models.Users || mongoose.model<any>("Users", userSchema);
+const User = mongoose.models.Users || mongoose.model<any>("Users", userSchema);
 
 export default User;

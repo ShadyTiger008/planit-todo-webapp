@@ -1,86 +1,63 @@
-// import { connectDB, getConnection } from "@/server/db";
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "~/app/server/db";
 import User from "~/app/server/models/user.model";
+import { v4 as uuidv4 } from "uuid";
 
 connectDB();
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json();
+    const { fullName, userName, email, password } = await request.json();
 
-    if (!email && !password) {
-      throw new Error("Email and password are required");
+    // Validate required fields
+    if (!fullName || !userName || !email || !password) {
+      throw new Error("All fields are required");
     }
 
-    // Find user by email in MongoDB
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      throw new Error("No user exists with this email");
+    // Check if the user already exists
+    const existingUser = await User.findOne({ $or: [{ email }, { userName }] });
+    if (existingUser) {
+      throw new Error("User with this email or userName already exists");
     }
 
-    // If password is not provided, generate OTP
-    // if (!password) {
-    //   const generatedOtp = await generateOTP(); // Implement this function as needed
+    // Create a new user
+    const newUser = new User({
+      userId: uuidv4(),
+      fullName,
+      userName,
+      email,
+      password, // This will be hashed in the pre-save middleware
+    });
 
-    //   // Update user's OTP in MongoDB
-    //   user.otp = generatedOtp;
-    //   user.otpVerified = false;
-    //   await user.save();
-
-    //   // Send OTP email (implement sendEmail function)
-    //   await sendEmail({
-    //     mail_type: mailTypes[1],
-    //     email: user.email,
-    //     subject: "Your One-Time Password (OTP) for Login Verification",
-    //     title: "Welcome! Here's Your OTP to Access Your Account",
-    //     otp: generatedOtp,
-    //     name: user.fullName,
-    //   });
-
-    //   return NextResponse.json(
-    //     {
-    //       message: "An OTP is sent to your email. Check your mail!",
-    //       success: true,
-    //     },
-    //     { status: 200 },
-    //   );
-    // }
-
-    // Validate password
-    const isValidPassword = await user.isPasswordCorrect(password);
-
-    if (!isValidPassword) {
-      throw new Error("Invalid password");
-    }
+    // Save user to the database
+    await newUser.save();
 
     // Generate tokens
-    const accessToken = user.generateAccessToken();
-    const refreshToken = user.generateRefreshToken();
+    const accessToken = newUser.generateAccessToken();
+    const refreshToken = newUser.generateRefreshToken();
 
     // Update refresh token in MongoDB
-    user.refreshToken = refreshToken;
-    await user.save();
+    newUser.refreshToken = refreshToken;
+    await newUser.save();
 
     // Prepare response
     const response = NextResponse.json(
       {
         success: true,
-        message: "User successfully logged in",
-        data: user,
+        message: "User successfully registered",
+        data: newUser,
       },
-      { status: 200 },
+      { status: 201 },
     );
 
     // Set refresh token as cookie
-    const expiresInMs = Number(process.env.REFRESH_TOKEN_EXPIRY) * 1500000000; // Convert seconds to milliseconds
+    const expiresInMs = Number(process.env.REFRESH_TOKEN_EXPIRY) * 1000; // Convert to milliseconds
     const expiryDate = new Date(Date.now() + expiresInMs);
     response.cookies.set("auth", refreshToken, { expires: expiryDate });
 
     return response;
   } catch (error: any) {
-    console.error("Error logging in:", error);
-    return NextResponse.json({ error: error.message }, { status: 401 });
+    console.error("Error during registration:", error);
+    return NextResponse.json({ error: error.message }, { status: 400 });
   }
 }

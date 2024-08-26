@@ -13,6 +13,7 @@ import Column from "~/components/coloumn";
 import { useGetQuery } from "~/app/providers/query/getQuery";
 import { convert_to_value } from "~/app/server/utils/helpers";
 import AddColumnButton from "~/components/add-column-button";
+import { NavMenu } from "~/components/navmenu";
 
 const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -20,7 +21,11 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
   const [loading, setLoading] = useState(true);
 
   // Fetch columns using the useGetQuery hook
-  const { data: columnsData, isLoading: columnsLoading, refetch } = useGetQuery({
+  const {
+    data: columnsData,
+    isLoading: columnsLoading,
+    refetch,
+  } = useGetQuery({
     url: `/board/${params.boardId}`,
   });
 
@@ -138,10 +143,11 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
   }
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto max-h-screen overflow-y-hidden p-4">
       <div className="mb-4 flex items-center justify-between">
+        <NavMenu />
         <h1 className="text-2xl font-bold">Kanban Board</h1>
-        <AddColumnButton boardId={params.boardId} refetch={refetch}/>
+        <AddColumnButton boardId={params.boardId} refetch={refetch} />
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
@@ -163,14 +169,14 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
-                      className="p- min-h-screen w-[20rem] md:w-[25rem] flex-shrink-0 rounded border border-gray-300 bg-gray-100"
+                      className="p- min-h-screen w-[20rem] flex-shrink-0 overflow-y-hidden rounded border border-gray-300 bg-gray-100 md:w-[25rem]"
                     >
                       <Droppable droppableId={convert_to_value(item.title)}>
                         {(provided) => (
                           <div
                             ref={provided.innerRef}
                             {...provided.droppableProps}
-                            className="min-h-screen w-full"
+                            className="max-h-screen w-full"
                           >
                             <Column
                               title={item.title}
