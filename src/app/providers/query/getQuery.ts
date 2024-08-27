@@ -23,12 +23,12 @@ const getResponseData = async ({
   skip: number;
 }) => {
   const response = await axios.get(`${server_api}${url}`);
-  console.log(response.data.data.users);
+  // console.log(response.data.data.users);
   return response.data;
 };
 
 export const useGetQuery = ({ url }: { url: string }) => {
-  console.log("url", url);
+  // console.log("url", url);
 
   const searchParams = useSearchParams();
   const page = searchParams.get("page") || 1;

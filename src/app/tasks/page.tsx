@@ -15,7 +15,7 @@ const BoardsTask = (props: Props) => {
   const { data, isLoading: dataLoading } = useGetQuery({
     url: `/board?${user?._id}`,
   });
-  console.log("Data after fetch: ", data?.data?.document);
+  // console.log("Data after fetch: ", data?.data?.document);
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-gray-100 py-8">
@@ -33,7 +33,7 @@ const BoardsTask = (props: Props) => {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {data?.data?.document?.length > 0 ? (
               data?.data?.document.map((board: any) => {
-                console.log("Board: ", board);
+                // console.log("Board: ", board);
 
                 return (
                   <Link

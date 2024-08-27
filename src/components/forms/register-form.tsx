@@ -28,8 +28,8 @@ const RegistrationForm = () => {
     try {
       const response: any = await userRegistration(data);
       if (response?.success) {
-        console.log("Registration Response: ", response);
-        //   router.push("/tasks");
+        // console.log("Registration Response: ", response);
+          router.push("/tasks");
         toast.success("Registration successful!");
       }
     } catch (error: any) {
