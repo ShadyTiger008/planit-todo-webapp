@@ -1,5 +1,5 @@
 // export const client_api = "http://localhost:3000";
-export const client_api = "https://planit-pi.vercel.app/";
+export const client_api = "https://planit-pi.vercel.app";
 
 export const server_api = `${client_api}/api`;
 
