@@ -6,7 +6,7 @@ const nextConfig = {
       "localhost",
       "images.unsplash.com",
       "unsplash.com",
-      "https://planit-pi.vercel.app"
+      "planit-pi.vercel.app",
     ],
   },
   typescript: {
