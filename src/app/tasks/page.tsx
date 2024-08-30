@@ -16,7 +16,7 @@ const BoardsTask = (props: Props) => {
   // console.log("User from global: ", user);
 
   const { data, isLoading: dataLoading } = useGetQuery({
-    url: `/board?${user?._id}`,
+    url: `/board?userId=${user?._id}`,
   });
   // console.log("Data after fetch: ", data?.data?.document);
 
@@ -36,8 +36,6 @@ const BoardsTask = (props: Props) => {
           <div className="grid grid-cols-1 gap-5">
             {data?.data?.document?.length > 0 ? (
               data?.data?.document.map((board: any) => {
-                // console.log("Board: ", board);
-
                 return (
                   <Link
                     href={`/tasks/${board._id}`}

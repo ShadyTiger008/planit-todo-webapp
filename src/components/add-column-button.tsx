@@ -58,7 +58,7 @@ const AddColumnButton = ({ boardId, refetch }: Props) => {
       <DialogTrigger asChild>
         <div className="flex transform cursor-pointer flex-row items-center gap-2 rounded-full bg-blue-600 px-4 py-2 shadow-lg transition duration-300 ease-in-out hover:scale-105 hover:bg-blue-700">
           <Plus className="h-5 w-5 text-white" />
-          <span className="text-sm font-medium text-white">Add Column</span>
+          <span className="text-xs md:text-sm font-medium text-white">Add Column</span>
         </div>
       </DialogTrigger>
       <DialogContent className="rounded-lg shadow-lg sm:max-w-[450px]">

@@ -146,7 +146,7 @@ const KanbanBoard = ({ params }: { params: { boardId: string } }) => {
     <div className="container mx-auto max-h-screen overflow-y-hidden p-4">
       <div className="mb-4 flex items-center justify-between">
         <NavMenu />
-        <h1 className="text-2xl font-bold">Kanban Board</h1>
+        <h1 className="text-2xl font-bold hidden md:block">Kanban Board</h1>
         <AddColumnButton boardId={params.boardId} refetch={refetch} />
       </div>
 
