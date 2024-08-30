@@ -9,7 +9,7 @@ const Hero = () => {
           <img
             alt="product image"
             className="order-last mx-auto min-w-[400px] rounded-xl max-sm:px-5 md:h-[500px] md:min-w-[800px]"
-            src="/hero-image.png"
+            src="/hero.png"
           />
           <div className="flex flex-col justify-center space-y-4 max-md:items-center max-md:text-center sm:max-w-[90%] lg:max-w-none">
             <div className="space-y-2">

@@ -1,3 +1,4 @@
+import { Menu } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -16,7 +17,9 @@ export function NavMenu() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline">Open</Button>
+        <Button variant="outline">
+          <Menu />
+        </Button>
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
