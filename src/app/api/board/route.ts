@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
 // POST Method: Create a new board
 export async function POST(request: NextRequest) {
   try {
-    const { name, description, userId } = await request.json();
+    const { name, description, userId, backgroundImage } = await request.json();
 
     // Check if the board with the same name already exists for the user
     const existBoard = await KanbanBoard.findOne({ name, userId });
@@ -78,6 +78,7 @@ export async function POST(request: NextRequest) {
       name,
       description,
       userId,
+      backgroundImage,
     });
 
     return NextResponse.json(

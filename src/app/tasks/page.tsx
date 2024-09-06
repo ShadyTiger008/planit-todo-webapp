@@ -8,6 +8,9 @@ import UserAvatar from "~/components/user-avatar";
 import Image from "next/image";
 import { client_api } from "../config";
 import { Delete, Edit, Trash } from "lucide-react";
+import { Button } from "~/components/ui/button";
+import { IoIosAddCircleOutline } from "react-icons/io";
+import AddBoardButton from "~/components/add-board-buttton";
 
 type Props = {};
 
@@ -15,16 +18,20 @@ const BoardsTask = (props: Props) => {
   const { user, isAuthenticated, isLoading } = useAuthStore();
   // console.log("User from global: ", user);
 
-  const { data, isLoading: dataLoading } = useGetQuery({
+  const { data, isLoading: dataLoading, refetch } = useGetQuery({
     url: `/board?userId=${user?._id}`,
   });
   // console.log("Data after fetch: ", data?.data?.document);
 
   return (
-    <main className="flex min-h-screen flex-col items-center bg-gray-100 py-8 w-full gap-10">
-      <nav className="flex flex-row justify-between items-center px-10 w-full">
-      <h2 className="text-3xl font-semibold text-gray-800">All Boards</h2>
-        <UserAvatar/>
+    <main className="flex min-h-screen w-full flex-col items-center gap-10 bg-gray-100 py-8">
+      <nav className="flex w-full flex-row items-center justify-between px-10">
+        <h2 className="text-3xl font-semibold text-gray-800">All Boards</h2>
+        <div className="flex flex-row gap-5">
+         
+          <AddBoardButton refetch={refetch}/>
+          <UserAvatar />
+        </div>
       </nav>
       <div className="w-full max-w-4xl rounded-lg bg-white p-6 shadow-md">
         {isLoading || dataLoading ? (
