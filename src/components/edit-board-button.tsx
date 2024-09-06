@@ -95,7 +95,7 @@ const EditBoardButton = ({ refetch, boardId, boardName, boardDescription }: Prop
     <Dialog>
       <DialogTrigger asChild>
         <button
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600 shadow transition duration-200 ease-in-out hover:bg-blue-200"
+          className="flex h-8 md:h-10 w-8 md:w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600 shadow transition duration-200 ease-in-out hover:bg-blue-200"
           aria-label="Edit"
         >
           <Edit className="h-5 w-5" />

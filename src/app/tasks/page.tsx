@@ -27,8 +27,8 @@ const BoardsTask = (props: Props) => {
 
   return (
     <main className="flex min-h-screen w-full flex-col items-center gap-10 bg-gray-100 py-8">
-      <nav className="flex w-full flex-row items-center justify-between px-10">
-        <h2 className="text-3xl font-semibold text-gray-800">All Boards</h2>
+      <nav className="flex w-full flex-row items-center justify-between px-5 md:px-10">
+        <h2 className="text-lg md:text-3xl font-semibold text-gray-800">All Boards</h2>
         <div className="flex flex-row gap-5">
          
           <AddBoardButton refetch={refetch}/>
@@ -67,14 +67,14 @@ const BoardsTask = (props: Props) => {
                       <div className="flex flex-row items-center justify-between">
                         <Link
                           href={`/tasks/${board._id}`}
-                          className="text-2xl font-bold"
+                          className="text-lg md:text-2xl font-bold"
                         >
                           {board.name}
                         </Link>
                         <div className="flex items-center gap-4">
                           <EditBoardButton refetch={refetch} boardId={board._id} boardName={board.name} boardDescription={board.description}/>
                           <button
-                            className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-red-600 shadow transition duration-200 ease-in-out hover:bg-red-200"
+                            className="flex h-8 md:h-10 w-8 md:w-10 items-center justify-center rounded-full bg-red-100 text-red-600 shadow transition duration-200 ease-in-out hover:bg-red-200"
                             aria-label="Delete"
                             onClick={async () => {
                               await axios.delete(
@@ -87,16 +87,16 @@ const BoardsTask = (props: Props) => {
                           </button>
                         </div>
                       </div>
-                      <p className="mt-2 text-lg">{board.description}</p>
+                      <p className="mt-2 text-sm md:text-lg">{board.description}</p>
 
                       <div className="mt-6 flex flex-row items-center justify-between">
                         <div className="mb-2">
-                          <h4 className="text-sm font-semibold">Created At:</h4>
-                          <p>{new Date(board.createdAt).toLocaleString()}</p>
+                          <h4 className="text-xs md:text-sm font-semibold">Created At:</h4>
+                          <p className="text-sm md:text-base">{new Date(board.createdAt).toLocaleString()}</p>
                         </div>
                         <div>
-                          <h4 className="text-sm font-semibold">Updated At:</h4>
-                          <p>{new Date(board.updatedAt).toLocaleString()}</p>
+                          <h4 className="text-xs md:text-sm font-semibold">Updated At:</h4>
+                          <p className="text-sm md:text-base">{new Date(board.updatedAt).toLocaleString()}</p>
                         </div>
                       </div>
                     </div>

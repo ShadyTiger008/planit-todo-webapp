@@ -115,7 +115,6 @@ const AddBoardButton = ({ refetch }: Props) => {
               placeholder="Enter board name"
               className="rounded-md border p-3 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
-
             {errors.name && (
               <span className="text-sm text-red-600">
                 {errors.name.message}
@@ -161,11 +160,11 @@ const AddBoardButton = ({ refetch }: Props) => {
               onChange={handleImageUpload}
               className="rounded-md border p-3 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
-            {errors.backgroundImage && (
+            {/* {errors.backgroundImage && (
               <span className="text-sm text-red-600">
                 Background image is required
               </span>
-            )}
+            )} */}
           </div>
 
           <DialogFooter>
