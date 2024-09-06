@@ -9,7 +9,7 @@ const RegistrationModal = (props: Props) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="rounded-md bg-indigo-500 px-6 py-3 text-white transition-all hover:bg-indigo-600">
+        <Button className="rounded-md bg-primary px-6 py-3 text-white transition-all hover:bg-indigo-600">
           Register
         </Button>
       </DialogTrigger>

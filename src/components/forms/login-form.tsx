@@ -119,7 +119,7 @@ const LoginForm = (props: Props) => {
           </Button>
           <p className="text-sm text-gray-500">
             Don’t have an account yet?{" "}
-            <Link href="/sign-up" className="text-indigo-600 hover:underline">
+            <Link href="/" className="text-indigo-600 hover:underline">
               Sign up
             </Link>
           </p>

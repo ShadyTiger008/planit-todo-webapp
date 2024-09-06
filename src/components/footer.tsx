@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React from "react";
 import {
   FaFacebookF,
@@ -14,8 +15,18 @@ const Footer = (props: Props) => {
       <div className="container mx-auto grid grid-cols-1 gap-8 px-6 md:grid-cols-3">
         {/* Brand Section */}
         <div className="flex flex-col items-center md:items-start">
-          <h2 className="mb-4 text-3xl font-bold">PlanIt</h2>
-          <p className="text-gray-400">
+          <div className="flex items-center gap-3">
+            <div className="relative h-10 w-10">
+              <Image
+                src="/logo/logo.png"
+                alt="PlanIt Logo"
+                fill
+                className="object-contain"
+              />
+            </div>
+            <h1 className="text-3xl font-bold text-white">PlanIt</h1>
+          </div>
+          <p className="text-gray-400 text-center md:text-left">
             Your ultimate task and project management tool. Streamline your
             workflow and plan efficiently.
           </p>
