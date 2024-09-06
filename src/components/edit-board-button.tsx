@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import { Plus } from "lucide-react";
+import { Edit, Plus } from "lucide-react";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -24,9 +24,12 @@ import useAuthStore from "~/app/providers/store/authStore";
 
 type Props = {
   refetch: () => void;
+  boardId: string
+  boardName: string
+  boardDescription: string;
 };
 
-const AddBoardButton = ({ refetch }: Props) => {
+const EditBoardButton = ({ refetch, boardId, boardName, boardDescription }: Props) => {
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
   const { user } = useAuthStore();
 
@@ -39,9 +42,11 @@ const AddBoardButton = ({ refetch }: Props) => {
 
   const onSubmit = async (info: FieldValues) => {
     try {
-      // Ensure background image is uploaded
-      if (!backgroundImage) {
-        toast.error("Background image is required.");
+      // Check if at least one field is filled
+      if (!info.name && !info.description && !backgroundImage) {
+        toast.error(
+          "At least one field (name, description, or background image) is required.",
+        );
         return;
       }
 
@@ -49,19 +54,20 @@ const AddBoardButton = ({ refetch }: Props) => {
         name: info.name,
         description: info.description,
         backgroundImage: backgroundImage,
-        userId: user._id,
+        boardId: boardId,
       };
 
-      await axios.post(`${server_api}/board`, body); // API endpoint to add the board
-      toast.success("Board added successfully!");
+      await axios.put(`${server_api}/board`, body);
+      toast.success("Board updated successfully!");
       refetch();
-      reset(); // Reset the form
-      setBackgroundImage(null); // Reset background image
+      reset();
+      setBackgroundImage(null);
     } catch (error: any) {
       console.log("Error:", error);
-      toast.error("Failed to add board.");
+      toast.error("Failed to update board.");
     }
   };
+
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -88,18 +94,20 @@ const AddBoardButton = ({ refetch }: Props) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="flex flex-row items-center gap-1">
-          <IoIosAddCircleOutline className="h-5 w-5" />
-          <span>Add Board</span>
-        </Button>
+        <button
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600 shadow transition duration-200 ease-in-out hover:bg-blue-200"
+          aria-label="Edit"
+        >
+          <Edit className="h-5 w-5" />
+        </button>
       </DialogTrigger>
       <DialogContent className="rounded-lg shadow-lg sm:max-w-[450px]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-gray-800">
-            Add New Board
+            Edit A Board
           </DialogTitle>
           <DialogDescription className="text-gray-600">
-            Add a new board by providing a name, description, and selecting a
+            Edit a board by providing a name, description, and selecting a
             background image.
           </DialogDescription>
         </DialogHeader>
@@ -111,8 +119,8 @@ const AddBoardButton = ({ refetch }: Props) => {
             </Label>
             <Input
               id="name"
-              {...register("name", { required: "Board name is required" })}
-              placeholder="Enter board name"
+              {...register("name")}
+              placeholder={boardName}
               className="rounded-md border p-3 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
 
@@ -133,10 +141,8 @@ const AddBoardButton = ({ refetch }: Props) => {
             </Label>
             <Input
               id="description"
-              {...register("description", {
-                required: "Board description is required",
-              })}
-              placeholder="Enter board description"
+              {...register("description")}
+              placeholder={boardDescription}
               className="rounded-md border p-3 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
             {/* {errors.description && (
@@ -157,15 +163,10 @@ const AddBoardButton = ({ refetch }: Props) => {
             <Input
               id="backgroundImage"
               type="file"
-              {...register("backgroundImage", { required: true })}
+              {...register("backgroundImage")}
               onChange={handleImageUpload}
               className="rounded-md border p-3 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
-            {errors.backgroundImage && (
-              <span className="text-sm text-red-600">
-                Background image is required
-              </span>
-            )}
           </div>
 
           <DialogFooter>
@@ -173,7 +174,7 @@ const AddBoardButton = ({ refetch }: Props) => {
               type="submit"
               className="w-full rounded-md bg-primary py-2 text-white shadow transition duration-300 ease-in-out hover:bg-primary/90"
             >
-              Add Board
+              Edit Board
             </Button>
           </DialogFooter>
         </form>
@@ -182,4 +183,4 @@ const AddBoardButton = ({ refetch }: Props) => {
   );
 };
 
-export default AddBoardButton;
+export default EditBoardButton;
