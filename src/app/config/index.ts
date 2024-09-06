@@ -12,7 +12,7 @@ export const category_api = `${server_api}/category`;
 
 export const subcategory_api = `${server_api}/subcategory`;
 
-export const note_api = `${server_api}/note`;
+export const board_api = `${server_api}/board`;
 
 export const upload_api = `${server_api}/upload`;
 
